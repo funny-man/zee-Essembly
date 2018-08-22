@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        margin: 0;
+        padding: 0;
+        min-width: 210px;
+    }
+    .content{
+        position: relative;
+    }
+    .item{
+        width: 200px;
+        position: absolute;
+        transition:all 0.5s;
+        margin-left: 10px;
+        margin-top: 10px;      
+    }
+</style>
+<body>
+    <div class="content">
+        <div class="item">1</div>
+        <div class="item">2</div>
+        <div class="item">3</div>
+        <div class="item">4</div>
+        <div class="item">5</div>
+        <div class="item">6</div>
+        <div class="item">7</div>
+        <div class="item">8</div>
+        <div class="item">9</div>
+        <div class="item">10</div>
+        <div class="item">11</div>
+        <div class="item">12</div>
+        <div class="item">13</div>
+        <div class="item">14</div>
+        <div class="item">15</div>
+        <div class="item">16</div>
+        <div class="item">17</div>
+        <div class="item">18</div>
+        <div class="item">19</div>
+        <div class="item">20</div>  
+        <div class="item">21</div>
+        <div class="item">22</div>
+        <div class="item">23</div>
+        <div class="item">24</div>
+        <div class="item">25</div>
+        <div class="item">26</div>
+        <div class="item">27</div>
+        <div class="item">28</div>
+        <div class="item">29</div>
+        <div class="item">30</div>
+        <div class="item">31</div>
+        <div class="item">32</div>
+        <div class="item">33</div>
+        <div class="item">34</div>
+        <div class="item">35</div>
+        <div class="item">36</div>
+        <div class="item">37</div>
+        <div class="item">38</div>
+        <div class="item">39</div>
+        <div class="item">40</div>  
+    </div> 
+</body>
+<script>
+    var color = ['#8796f1','#bc90ec','#fea99a','#8cc5f7','#fe7b7a','#ffd666','#60dc9e','#ffa468','#f694bd','#fbbc6b']
+    var width = [200,236,272,308,344,380]
+    var $items = $('.content .item')
+    var $itemCount =  $items.size()
+
+    //设置随机高度随机颜色
+    for(var i=0;i<$itemCount;i++){
+        $items.eq(i).css({
+            'height':width[random(0,6)],
+            'background-color':color[random(0,10)]
+        })
+    }
+    
+    function random(min,max) {
+        return min+Math.floor(Math.random()*(max-min))
+    }//min到max的随机整数不包括max
+
+
+    //下面是封装一个函数；watefull=(function(){})()这个立即执行函数
+    var watefull=(function(){
+        function init(){
+            waterfull()
+            $(window).resize(function(){
+                waterfull()
+            })//窗口尺寸发生变化触发
+        }
+        //遍历图片
+        function waterfull(){
+            var rowsNumber =parseInt($('.content').width()/ $('.item').outerWidth(true)) //计算横排的数量
+            var itemArr=[]
+            for(var i=0;i<rowsNumber;i++){
+                itemArr[i] = 0
+            }//初始化数组让数组里面都是0，且数组个数是图片横排数量
+            $('.item').each(function() {
+                var minValue = Math.min.apply(null,itemArr)//计算数组中最小的的数字
+                var minIndex = itemArr.indexOf(minValue)//最小数组的index
+                $(this).css({
+                    top:minValue,
+                    left:$(this).outerWidth(true)*minIndex
+                })
+                itemArr[minIndex]+=$(this).outerHeight(true)
+            });        
+        }
+        return {
+            init:init
+        }
+    })()
+
+  
+    watefull.init()//执行上面这个函数
+
+    
+</script>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    body,
+    figure {
+        margin: 0;
+        padding: 0;
+    }
+
+    main {
+        font-size: 0;
+    }
+
+    main>figure {
+        display: inline-block;
+        /* padding: 5px; */
+    }
+
+    main>figure a {
+        display: block;
+
+    }
+
+    main>figure img {
+        display: block;
+        box-sizing: border-box;
+        padding: 5px;
+
+    }
+</style>
+
+<body>
+    <header>
+        <input id="search-ipt" placeholder="请输入你的关键词" type="text">
+    </header>
+    <main>
+        <!-- <figure>
+            <a href=""><img src="http://olch1yuye.bkt.clouddn.com/17-10-19/7105164.jpg" alt=""></a> 
+        </figure> -->
+    </main>
+</body>
+<!-- <script src="//code.jquery.com/jquery-2.1.1.min.js"></script> -->
+<script> 
+
+    function CaskLayout() {
+        this.main = document.querySelector('main')
+        this.mainWidth = parseFloat(getComputedStyle(this.main).width)
+        this.baseHeight = 200
+        this.rowList = []
+        this.rowTotalWidth = 0
+        this.clock
+    }
+    CaskLayout.prototype.getData = function (keyword, page) {
+        //console.log(this)
+        return new Promise(function (resolve, reject) {
+            var data = {
+                key: '7029097-4b1914aea59adc70be0d156e8',//key在pixabay注册后的特定码
+                q: keyword,//搜索时候用到的关键词  
+                image_type: 'all',//图片的类型
+                page: page,//每次获取图片数据的页码
+                per_page: 30//每页获取多少张图片;默认20可以不写
+            }
+            var url = 'https://pixabay.com/api/?'
+            for (var key in data) {
+                url += key + '=' + data[key] + '&'
+                // console.log(key+'='+data[key])
+            }
+            var xhr = new XMLHttpRequest
+            xhr.open('get', url, true)
+            xhr.send()
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && (this.status = '200' || this.status == '304')) {
+                    var imgsData = JSON.parse(this.responseText)
+                    //console.log(imgsData)
+                    resolve(imgsData)
+                }
+            }
+            xhr.onerror = function () {
+                reject('ajax error')
+            }
+        })
+
+    }
+    CaskLayout.prototype.render = function (data) {
+        // console.log(this)
+        // console.log(data)
+        var _this = this
+        data.hits.forEach(function (imgInfo) {
+            //console.log(imgInfo)
+            imgInfo.newHeight = _this.baseHeight  //imgInfo对象是hits中的每一组图片信息；这一步是在里面添加一个新的高度信息
+            //console.log(imgInfo.newHeight)
+            imgInfo.newWidth = _this.baseHeight * (imgInfo.webformatWidth / imgInfo.webformatHeight)
+            //console.log(imgInfo.newWidth)
+
+            if (imgInfo.newWidth + _this.rowTotalWidth > _this.mainWidth) {
+                _this.layout(_this.rowList, _this.rowTotalWidth)
+                _this.rowList = [imgInfo]
+                _this.rowTotalWidth = imgInfo.newWidth
+            } else {
+                //console.log(imgInfo)
+                _this.rowList.push(imgInfo)
+                _this.rowTotalWidth += imgInfo.newWidth
+            }
+        });
+        _this.layout(_this.rowList, _this.rowTotalWidth, _this.baseHeight)
+        _this.rowList = []
+        _this.rowTotalWidth = 0
+    }
+    CaskLayout.prototype.test = function (data) {
+        this.layout('haha')
+    }
+    CaskLayout.prototype.layout = function (list, rowTotalWidth, height) {
+        var newHeight = (this.baseHeight / this.rowTotalWidth) * this.mainWidth
+        var fragment = document.createDocumentFragment()
+        list.forEach(function (imgInfo) {
+            var figure = document.createElement("figure")
+            var a = document.createElement("a")
+            var img = document.createElement("img")
+            a.setAttribute("href", imgInfo.pageURL);
+            img.setAttribute("src", imgInfo.webformatURL);//webformatURL
+            if (height) {
+                img.setAttribute("height", height + 'px');
+            } else {
+                img.setAttribute("width", newHeight * (imgInfo.webformatWidth / imgInfo.webformatHeight) + 'px');
+            }
+            a.appendChild(img)
+            figure.appendChild(a)
+            fragment.appendChild(figure)
+        })
+        this.main.appendChild(fragment)
+    }
+    var layout_one = new CaskLayout()
+    layout_one.getData('all', 1)
+        .then(layout_one.render.bind(layout_one))
+        .catch(function (err) {
+            console.log(err)
+        })
+    window.onresize = function () {
+        console.log('滚')
+        if (layout_one.clock) {
+            clearTimeout(layout_one.clock)
+        }
+        layout_one.clock = setTimeout(function () {
+            console.log('滚完了')
+            layout_one.main.innerHTML = ''
+            layout_one.mainWidth = parseFloat(getComputedStyle(layout_one.main).width)
+            layout_one.getData('all', 1)
+                .then(layout_one.render.bind(layout_one))
+                .catch(function (err) {
+                    console.log(err)
+                })
+        }, 500);
+    }
+</script>
+</html>

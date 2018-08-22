@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="description" content="【jQuery】实现tab左右滑动效果" />
+    <meta charset="utf-8">
+    <title>JS Bin</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 20px 0;
+            padding: 0;
+        }
+
+        html,
+        body,
+        ul,
+        li,
+        a {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            text-decoration: none;
+        }
+
+        .carousel {
+            position: relative;
+            width: 400px;
+            height: 221.86px;
+            overflow: hidden;
+        }
+
+        .carousel .img-ct {
+            position: absolute;
+            /*  left: -400px; */
+        }
+
+        .carousel .img-ct img {
+            width: 400px;
+        }
+
+        .carousel .img-ct li {
+            float: left;
+        }
+
+        .arrow {
+            position: absolute;
+            top: 50%;
+            margin-top: -20px;
+            text-align: center;
+            border-radius: 50%;
+            box-shadow: 0 0 2px #999;
+            opacity: 0.7;
+            background-color: #ff7e38;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .arrow:hover {
+            opacity: 1;
+        }
+
+        .pre {
+            left: 15px
+        }
+
+        .next {
+            right: 15px;
+        }
+
+        .bullet {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .bullet li {
+            border-radius: 50%;
+            border: 1px solid #ff7e38;
+            width: 10px;
+            height: 10px;
+            display: inline-block;
+            cursor: pointer;
+            margin: 0 3px;
+            box-shadow: 0 0 2px #333;
+        }
+
+        .active {
+            background-color: #ff7e38;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="carousel">
+        <ul class="img-ct">
+            <li data-id=0>
+                <img src="http://olch1yuye.bkt.clouddn.com/17-9-3/71347749.jpg" alt="">
+            </li>
+            <li data-id=1>
+                <img src="http://olch1yuye.bkt.clouddn.com/17-9-3/79411739.jpg" alt="">
+            </li>
+            <li data-id=3>
+                <img src="http://olch1yuye.bkt.clouddn.com/17-9-3/7736633.jpg" alt="">
+            </li>
+            <li data-id=4>
+                <img src="http://olch1yuye.bkt.clouddn.com/17-10-23/69139400.jpg" alt="">
+            </li>
+        </ul>
+        <a class="pre arrow" href="#"><</a>
+                <a class="next arrow" href="#">></a>
+                <ul class="bullet">
+                </ul>
+    </div>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+    </script>
+    <script>
+        function Carousel($ct) {
+            this.$ct = $ct
+            this.init()
+            this.bind()
+        }
+        //init初始化
+        Carousel.prototype.init = function () {
+            this.$imgCt = this.$ct.find('.img-ct')
+            this.$imgs = this.$ct.find('.img-ct li')//就算后面在首尾clon了图片这里缓存的图片数量还是不变
+            this.$nextBtn = this.$ct.find('.next')
+            this.$preBtn = this.$ct.find('.pre')
+            this.imgCount = this.$imgs.length//因为$imgs缓存的数据是不变的所以这个值也是不变的
+            this.imgWidth = this.$imgs.width()
+            this.$bulletCt = this.$ct.find('.bullet')
+            this.pageIndex = 0
+            this.isLock = false//设置锁防止pageIndex通过在多次点击的时候超出了-1~3的范围
+            this.$imgCt.append(this.$imgs.first().clone())
+            this.$imgCt.prepend(this.$imgs.last().clone())//在首位分别克隆一个图片
+            //----
+            for (var i = 0; i < this.imgCount; i++) {
+                this.$bulletCt.append('<li></li>')
+            }//根据图片多少添加下面指示器的数量
+            this.$bullet = this.$bulletCt.find('li')//根据选中所有指示器
+            this.$bullet.eq(0).addClass('active') //为第一个指示器设置默认样式
+            this.$imgCt.width((this.imgCount + 2) * this.imgWidth)//通过js设置图片容器宽度；可以在里面增加图片不会出现宽度不够
+            this.$imgCt.css({ left: -this.imgWidth })
+            //----
+        }
+        //bind绑定事件
+        Carousel.prototype.bind = function () {
+            var _this = this
+            setInterval(() => {
+                this.playNext(1)
+            }, 3000)
+            this.$nextBtn.on('click', function () {
+                if (_this.isLock) {
+                    return
+                } else {
+                    _this.isLock = true;
+                    _this.playNext(1)
+                }
+            })
+            this.$preBtn.on('click', function () {
+                if (_this.isLock) {
+                    return
+                } else {
+                    _this.isLock = true;
+                    _this.playPre(1)
+                }
+            })
+            this.$bullet.on('click', function () {
+                var index = $(this).index()
+                if (_this.isLock) {
+                    return
+                } if (index < _this.pageIndex) {
+                    _this.isLock = true;
+                    _this.playPre(_this.pageIndex - index)
+                } else {
+                    _this.isLock = true;
+                    _this.playNext(index - _this.pageIndex)
+                }
+                console.log($(this).index())
+            })
+        }
+        Carousel.prototype.playNext = function (len) {
+            var _this = this
+            this.$imgCt.animate({ left: '-=' + _this.imgWidth * len }, function () {
+                console.log(_this)
+                _this.pageIndex += len
+                if (_this.pageIndex === _this.imgCount) {
+                    _this.$imgCt.css({ left: -_this.imgWidth })
+                    _this.pageIndex = 0
+                }
+                _this.showBullet()
+                _this.isLock = false;
+            })
+        }
+        Carousel.prototype.playPre = function (len) {
+            var _this = this
+            this.$imgCt.animate({ left: '+=' + _this.imgWidth * len }, function () {
+                _this.pageIndex -= len
+                if (_this.pageIndex < 0) {
+                    _this.$imgCt.css({ left: -_this.imgWidth * _this.imgCount })
+                    _this.pageIndex = _this.imgCount - 1
+                }
+                _this.showBullet()
+                _this.isLock = false;
+            })
+        }
+        Carousel.prototype.showBullet = function () {
+            this.$bullet.removeClass('active')
+                .eq(this.pageIndex)
+                .addClass('active')
+        }
+        var carousel_one = new Carousel($('.carousel').eq(0))
+    </script>
+</body>
+
+</html>

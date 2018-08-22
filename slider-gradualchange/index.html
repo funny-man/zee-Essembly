@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <meta name="description" content="【jQuery】实现tab左右滑动效果" />
+    <meta charset="utf-8">
+    <title>JS Bin</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 20px 0;
+            padding: 0;
+        }
+
+        html,
+        body,
+        ul,
+        li,
+        a {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            text-decoration: none;
+        }
+
+        .carousel {
+            position: relative;
+            width: 400px;
+            height: 221.86px;
+            overflow: hidden;
+        }
+
+        .carousel .img-ct {
+            position: relative;
+            /*  left: -400px; */
+        }
+
+        .carousel .img-ct img {
+            width: 400px;
+        }
+
+        .carousel .img-ct li {
+            position: absolute;
+            display: none;
+        }
+
+        .arrow {
+            position: absolute;
+            top: 50%;
+            margin-top: -20px;
+            text-align: center;
+            border-radius: 50%;
+            box-shadow: 0 0 2px #999;
+            opacity: 0.7;
+            background-color: #ff7e38;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .arrow:hover {
+            opacity: 1;
+        }
+
+        .pre {
+            left: 15px
+        }
+
+        .next {
+            right: 15px;
+        }
+
+        .bullet {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .bullet li {
+            border-radius: 50%;
+            border: 1px solid #ff7e38;
+            width: 10px;
+            height: 10px;
+            display: inline-block;
+            cursor: pointer;
+            margin: 0 3px;
+            box-shadow: 0 0 2px #333;
+        }
+
+        .active {
+            background-color: #ff7e38;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="carousel">
+        <ul class="img-ct">
+            <li data-id=0>
+                <img src="http://olch1yuye.bkt.clouddn.com/17-9-3/71347749.jpg" alt="">
+            </li>
+            <li data-id=1>
+                <img src="http://olch1yuye.bkt.clouddn.com/17-9-3/79411739.jpg" alt="">
+            </li>
+            <li data-id=3>
+                <img src="http://olch1yuye.bkt.clouddn.com/17-9-3/7736633.jpg" alt="">
+            </li>
+            <li data-id=4>
+                <img src="http://olch1yuye.bkt.clouddn.com/17-10-23/69139400.jpg" alt="">
+            </li>
+        </ul>
+        <a class="pre arrow" href="#"><</a>
+        <a class="next arrow" href="#">></a>
+        <ul class="bullet">
+        </ul>
+    </div>
+    <script>
+        var $imgCt = $('.carousel .img-ct')
+        var $imgs = $('.carousel .img-ct li')//就算后面在首尾clon了图片这里缓存的图片数量还是不变
+        var $nextBtn = $('.carousel .next')
+        var $preBtn = $('.carousel .pre')
+        var imgCount = $imgs.size()//因为$imgs缓存的数据是不变的所以这个值也是不变的
+        var imgWidth = $imgs.width()
+
+        var $bulletCt = $('.carousel .bullet')
+
+        var pageIndex = 0
+        var isLock = false//设置锁防止pageIndex通过在多次点击的时候超出了-1~3的范围
+
+
+
+        //----
+        for (var i = 0; i < imgCount; i++) {
+            $bulletCt.append('<li></li>')
+        }//根据图片多少添加下面指示器的数量 
+        // //----
+
+        $nextBtn.on('click', function () {
+            stopAuto()
+            playNext()
+            autoPlay()
+        })
+        $preBtn.on('click', function () {
+            stopAuto()
+            playPre()
+            autoPlay()
+        })
+
+        $bulletCt.find('li').on('click', function () {
+            var index = $(this).index()
+            console.log(index)
+            stopAuto()
+            play(index)
+            autoPlay()
+        })
+        play(0)//初始化第一次执行
+        autoPlay()
+
+
+        function play(idx) {
+            if (isLock) return
+            isLock = true
+            $imgs.eq(pageIndex).fadeOut(1000, 'linear', function () { })
+            $imgs.eq(idx).fadeIn(1000, 'linear', function () {
+                isLock = false
+            })
+            pageIndex = idx
+            showBullet()
+            //console.log(idx)
+
+        }
+        function autoPlay() {
+            clock = setInterval(function () {
+                playNext()
+            }, 2000)
+        }
+        function stopAuto() {
+            clearInterval(clock)
+        }
+        function playNext() {
+            play((pageIndex + 1) % imgCount)//通过求余数让数值一直在0123之间循环
+        }
+        function playPre() {
+            play((pageIndex - 1 + imgCount) % imgCount)
+        }
+
+        function showBullet() {
+            $bulletCt.find('li').removeClass('active')
+                .eq(pageIndex)
+                .addClass('active')
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        ul,
+        li {
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        .clearfix:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+
+        .tab {
+            width: 600px;
+            margin: 20px auto;
+            border: 1px solid rgb(195, 198, 211);
+            padding: 20px 10px;
+            border-radius: 4px;
+            background-color: rgb(248, 249, 250)
+        }
+
+        .tab-header {
+            border-bottom: 1px solid #ccc;
+        }
+
+        .tab-header>li {
+            float: left;
+            color: rgb(185, 195, 207);
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .tab-header .active {
+            background-color: #fff;
+            border: 1px solid rgb(221, 224, 231);
+            border-bottom-color: #fff;
+            border-radius: 4px 4px 0 0;
+            color: rgb(255, 161, 73);
+            margin-bottom: -1px;
+        }
+
+        .tab-container {
+            background-color: #fff;
+            padding: 20px 10px;
+            border-bottom: 1px solid rgb(221, 224, 231);
+            border-left: 1px solid rgb(221, 224, 231);
+            border-right: 1px solid rgb(221, 224, 231);
+            color: rgb(90, 98, 117);
+        }
+
+        .tab-container>li {
+            display: none;
+        }
+
+        .tab-container>.active {
+            display: block;
+        }
+
+        .box {
+            height: 1000px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tab">
+        <ul class="tab-header clearfix">
+            <li class="active">选项1</li>
+            <li>选项2</li>
+            <li>选项3</li>
+        </ul>
+        <ul class="tab-container">
+            <li class="active">内容1
+                <ul>
+                    <li></li>
+                </ul>
+            </li>
+            <li>内容2</li>
+            <li>内容3</li>
+        </ul>
+    </div>
+
+    <div class="tab">
+        <ul class="tab-header clearfix">
+            <li class="active">选项1</li>
+            <li>选项2</li>
+            <li>选项3</li>
+            <li>选项4</li>
+        </ul>
+        <ul class="tab-container">
+            <li class="active">内容1
+                <ul>
+                    <li></li>
+                </ul>
+            </li>
+            <li>内容2</li>
+            <li>内容3</li>
+            <li>内容4</li>
+        </ul>
+    </div>
+
+    <div class="tab">
+        <ul class="tab-header clearfix">
+            <li class="active">选项1</li>
+            <li>选项2</li>
+            <li>选项3</li>
+            <li>选项4</li>
+        </ul>
+        <ul class="tab-container">
+            <li class="active">内容1
+                <ul>
+                    <li></li>
+                </ul>
+            </li>
+            <li>内容2</li>
+            <li>内容3</li>
+            <li>内容4</li>
+        </ul>
+    </div>
+
+    <!--<script src="js/jquery-3.1.0.min.js"></script>-->
+
+
+    <script>
+
+        function Tab(ct){
+            this.ct=ct;
+            this.init();
+            this.bind();
+        }
+        Tab.prototype.init=function(){
+            this.tabLis=this.ct.querySelectorAll('.tab-header>li')
+            this.tabPanels=this.ct.querySelectorAll('.tab-container>li')
+
+        }
+        Tab.prototype.bind=function(){
+            //console.log(this)
+            this.tabLis.forEach(element => {
+                element.onclick=(e)=>{
+                    var target=e.target
+                    var index=(()=>{
+                        //console.log(this)
+                        return [].indexOf.call(this.tabLis,target)
+                    })()
+                    this.tabLis.forEach(element => {
+                        element.classList.remove('active')
+                    });
+                    target.classList.add('active')
+
+                    this.tabPanels.forEach(element => {
+                        element.classList.remove('active')
+                    });
+                    this.tabPanels[index].classList.add('active')
+                    console.log()
+                };
+            });
+        }
+        var tab_one=new Tab(document.querySelectorAll('.tab')[0])
+        var tab_two=new Tab(document.querySelectorAll('.tab')[1])
+        var tab_three=new Tab(document.querySelectorAll('.tab')[2])
+
+    </script>
+</body>
+
+</html>

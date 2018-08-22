@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    body,
+    ul,
+    li,
+    a,
+    h3,
+    p,
+    div {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        box-sizing: border-box;
+        text-decoration: none;
+    }
+
+    .wrap {
+        max-width: 1496px;
+        min-width: 252px;
+        margin: 0 auto;
+    }
+
+    .wrap #pic-ct {
+        position: relative;
+        /* height: 6000px; */
+        margin-top: 30px;
+        /* background-color: pink; */
+    }
+
+    .wrap .load {
+        height: 60px;
+        text-align: center;
+    }
+    .wrap .load .loding{
+        height: 100%;
+    }
+    .wrap .load .refresh>img{
+        height: 40px;
+    }
+    .wrap .load .refresh>p{
+        color: pink;
+    }
+
+    .wrap #pic-ct .item {
+        position: absolute;
+        width: 236px;
+        border-radius: 4px;
+        background-color: #fff;
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 3px 0px;
+        padding-bottom: 20px;
+        transition: all .5s;
+    }
+
+    .wrap #pic-ct .hide {
+        display: none;
+    }
+
+    .wrap #pic-ct .item .link img {
+        display: block;
+        width: 100%;
+        border-radius: 4px 4px 0 0;
+    }
+
+    .wrap #pic-ct .item .link h3 {
+        font-size: 16px;
+        color: #333;
+        margin: 10px 10px 0 10px;
+        font-weight: bold;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 4px;
+
+    }
+
+    .wrap #pic-ct .item .link p {
+        /* display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden; */
+        font-size: 14px;
+        color: #999;
+        margin: 5px 10px 0 10px;
+    }
+</style>
+
+<body>
+    <div class="wrap">
+        <div class="ct-waterfall">
+            <ul id="pic-ct">
+                <li class="item hide"></li>
+            </ul>
+            <div class="load"></div>
+        </div>
+    </div>
+</body>
+<script src="http://apps.bdimg.com/libs/jquery/1.9.1/jquery.min.js"></script>
+<script> 
+    var curPage = 1
+    var perPage = 10
+    var $load = $('.load')
+    var clock
+    var nodeWidth = $('.item').outerWidth(true)//单个卡片宽度
+    var colNum = parseInt(($('#pic-ct').width() + 16) / (nodeWidth + 16))
+    var colSumHeight = []//储存瀑布流每一列高度
+    for (let i = 0; i < colNum; i++) {
+        colSumHeight[i] = 0
+    }
+    getNews()
+    //窗口改变遍历所有节点重新执行瀑布流布局
+    $(window).on('resize', function () {
+        waterfallAll()
+    });
+    //滚动直到loding出现发送ajax请求
+    $(window).on('scroll', function () {
+        console.log('滚动')
+        //由于鼠标滚动一次执行了多次滚动事件然而就会触发多次lazyRender()函数；所以设置延时让鼠标在滚动完成后在执行滚动事件里的函数
+        if (clock) {
+            clearTimeout(clock)
+        }
+        clock = setTimeout(function () {
+            if (isVisible($load)) {
+                getNews()
+            }
+
+        }, 300);
+        //上面代码申明一个clock；当滚动后300毫秒执行lazyRender()；且把这个定时状态存在clock中；
+        //当300毫秒内（也就是lazyRender()还未执行）；再次滚动了那么此时clock里面有值；进入if判断；
+        //if中clearTimeout(clock)把上一个定时器删除然后在执行下面的代码
+    });
+    //加载失败是后点击按钮重新发送请求
+    $load.on('click', function () {
+        console.log('点击了')
+        getNews()
+    })
+    //ajax请求函数
+    function getNews() {
+        if ($load.data('statusLock')) {
+            return
+        }
+        $load.data('statusLock',true).html('<img class="loding" src="http://olch1yuye.bkt.clouddn.com/17-10-13/87061659.jpg" alt="">')
+        $.ajax({
+            url: "http://platform.sina.com.cn/slide/album_tech?",
+            dataType: "jsonp",
+            jsonp: "jsoncallback",
+            data: {
+                app_key: "1271687855",
+                num: perPage,
+                page: curPage
+            },
+        }).done(function (ret) {
+            console.log(ret)
+            getData(ret.data)
+            curPage++
+            $load.data('statusLock',false).text('滚动刷新')
+        }).fail(function () {
+            alert('系统异常,请刷新页面或者重新打开页面！');
+            $load.data('statusLock',false).html('<div class="refresh"><img src="http://olch1yuye.bkt.clouddn.com/17-11-8/41872237.jpg" alt=""><p>点击刷新</p></div>')
+                                          
+        })
+    }
+    //遍历得到的data拼装且按照瀑布流布局
+    function getData(data) {
+        //console.log(newsList.data)
+        var newsNode = ''
+        $.each(data, function (idx, value) { //遍历获得的数据
+            newsNode += (createNode(value))  //把数据通过createNode()函数拼装 
+        })
+        var num = $(newsNode).find('img').length
+        $(newsNode).find('img')      //选中$newsNode节点中的的img
+            .load(function () {//在img加载完成后把节点放入页面 ；再执行waterfall()；这是计算的高度才是正确的    
+                num--
+                if (num > 0) {
+                    return
+                }
+                $('#pic-ct').append($(newsNode))
+                waterfallAll()
+                if (isVisible($load)) {
+                    getNews();
+                }
+            })
+    }
+    //把获得的数据拼成节点（这里只是单个节点；遍历获取的数据在执行这个函数）
+    function createNode(node) {
+        var newsNode = ''
+        newsNode += '<li class="item">';
+        newsNode += '<a href="' + node.url + '" class="link">';
+        newsNode += '<img src="' + node.img_url + '" alt="">';
+        newsNode += '<h3 class="header">' + node.name + '</h3>';
+        newsNode += '<p class="desp">' + node.short_intro + '</p>';
+        newsNode += '</a>';
+        newsNode += '</li>';
+        return newsNode
+    }
+    //遍历所有的节点进行瀑布流布局
+    function waterfallAll() {
+        nodeWidth = $('.item').outerWidth(true)//单个卡片宽度
+        colNum = parseInt(($('#pic-ct').width() + 16) / (nodeWidth + 16))
+
+        colSumHeight = []//储存瀑布流每一列高度
+        for (let i = 0; i < colNum; i++) {
+            colSumHeight[i] = 0
+        }
+        $('#pic-ct .item').each(function (idx) {
+            if(idx===0) return
+            var minValue = Math.min.apply(null, colSumHeight)//计算数组中最小的的数字
+            var minIndex = colSumHeight.indexOf(minValue)//最小数组的index
+            $(this).css({
+                top: minValue,
+                left: (nodeWidth + 16) * minIndex
+            })
+            colSumHeight[minIndex] += $(this).outerHeight(true) + 16
+            $('#pic-ct').height(Math.max.apply(null, colSumHeight));//把li元素容器的高度设置成最高度那一排的高度使得
+        });
+    }
+    //判断埋在末尾的节点是否出现在屏幕内
+    function isVisible($el) {
+        var scrollH = $(window).scrollTop(),//滚动高度
+            winH = $(window).height(),//窗口高度
+            top = $el.offset().top;//埋藏节点高度
+
+        if (top < winH + scrollH) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+</script>
+</html>
