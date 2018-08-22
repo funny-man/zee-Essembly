@@ -1,6 +1,27 @@
-# assembly
->原生js写的一些小组件包括、轮播图、瀑布流布局、回到顶部
+# Essembly
+>手写的一些组件集合
 
-## 预览
+包括
 
-预览地址：https://funny-man.github.io/zeeweb/#
+- 懒加载
+- 上拉加载
+- 轮播
+- tab
+- 瀑布流布局
+- 木桶布局
+
+## 效果预览
+
+懒加载：https://funny-man.github.io/zee-Essembly/load-on-demand/
+
+上拉加载：https://funny-man.github.io/zee-Essembly/pull-up-load/
+
+轮播-渐变：https://funny-man.github.io/zee-Essembly/slider-graduaichang/
+
+轮播-常规：https://funny-man.github.io/zee-Essembly/slider-normal/
+
+tab：https://funny-man.github.io/zee-Essembly/tab/
+
+瀑布流布局：https://funny-man.github.io/zee-Essembly/waterfall-flow/
+
+木桶布局：https://funny-man.github.io/zee-Essembly/木桶布局/
