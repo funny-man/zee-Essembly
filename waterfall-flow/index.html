@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
     <meta charset="UTF-8">
@@ -8,22 +9,25 @@
     <title>Document</title>
 </head>
 <style>
-    body{
+    body {
         margin: 0;
         padding: 0;
         min-width: 210px;
     }
-    .content{
+
+    .content {
         position: relative;
     }
-    .item{
+
+    .item {
         width: 200px;
         position: absolute;
-        transition:all 0.5s;
+        transition: all 0.5s;
         margin-left: 10px;
-        margin-top: 10px;      
+        margin-top: 10px;
     }
 </style>
+
 <body>
     <div class="content">
         <div class="item">1</div>
@@ -45,7 +49,7 @@
         <div class="item">17</div>
         <div class="item">18</div>
         <div class="item">19</div>
-        <div class="item">20</div>  
+        <div class="item">20</div>
         <div class="item">21</div>
         <div class="item">22</div>
         <div class="item">23</div>
@@ -65,61 +69,62 @@
         <div class="item">37</div>
         <div class="item">38</div>
         <div class="item">39</div>
-        <div class="item">40</div>  
-    </div> 
+        <div class="item">40</div>
+    </div>
 </body>
 <script>
-    var color = ['#8796f1','#bc90ec','#fea99a','#8cc5f7','#fe7b7a','#ffd666','#60dc9e','#ffa468','#f694bd','#fbbc6b']
-    var width = [200,236,272,308,344,380]
+    var color = ['#8796f1', '#bc90ec', '#fea99a', '#8cc5f7', '#fe7b7a', '#ffd666', '#60dc9e', '#ffa468', '#f694bd', '#fbbc6b']
+    var width = [200, 236, 272, 308, 344, 380]
     var $items = $('.content .item')
-    var $itemCount =  $items.size()
+    var $itemCount = $items.size()
 
     //设置随机高度随机颜色
-    for(var i=0;i<$itemCount;i++){
+    for (var i = 0; i < $itemCount; i++) {
         $items.eq(i).css({
-            'height':width[random(0,6)],
-            'background-color':color[random(0,10)]
+            'height': width[random(0, 6)],
+            'background-color': color[random(0, 10)]
         })
     }
-    
-    function random(min,max) {
-        return min+Math.floor(Math.random()*(max-min))
+
+    function random(min, max) {
+        return min + Math.floor(Math.random() * (max - min))
     }//min到max的随机整数不包括max
 
 
     //下面是封装一个函数；watefull=(function(){})()这个立即执行函数
-    var watefull=(function(){
-        function init(){
+    var watefull = (function () {
+        function init() {
             waterfull()
-            $(window).resize(function(){
+            $(window).resize(function () {
                 waterfull()
             })//窗口尺寸发生变化触发
         }
         //遍历图片
-        function waterfull(){
-            var rowsNumber =parseInt($('.content').width()/ $('.item').outerWidth(true)) //计算横排的数量
-            var itemArr=[]
-            for(var i=0;i<rowsNumber;i++){
+        function waterfull() {
+            var rowsNumber = parseInt($('.content').width() / $('.item').outerWidth(true)) //计算横排的数量
+            var itemArr = []
+            for (var i = 0; i < rowsNumber; i++) {
                 itemArr[i] = 0
             }//初始化数组让数组里面都是0，且数组个数是图片横排数量
-            $('.item').each(function() {
-                var minValue = Math.min.apply(null,itemArr)//计算数组中最小的的数字
+            $('.item').each(function () {
+                var minValue = Math.min.apply(null, itemArr)//计算数组中最小的的数字
                 var minIndex = itemArr.indexOf(minValue)//最小数组的index
                 $(this).css({
-                    top:minValue,
-                    left:$(this).outerWidth(true)*minIndex
+                    top: minValue,
+                    left: $(this).outerWidth(true) * minIndex
                 })
-                itemArr[minIndex]+=$(this).outerHeight(true)
-            });        
+                itemArr[minIndex] += $(this).outerHeight(true)
+            });
         }
         return {
-            init:init
+            init: init
         }
     })()
 
-  
+
     watefull.init()//执行上面这个函数
 
-    
+
 </script>
+
 </html>
