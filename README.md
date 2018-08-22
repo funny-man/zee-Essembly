@@ -25,3 +25,5 @@ tab：https://funny-man.github.io/zee-Essembly/tab/
 瀑布流布局：https://funny-man.github.io/zee-Essembly/waterfall-flow/
 
 木桶布局：https://funny-man.github.io/zee-Essembly/木桶布局/
+
+webpack模块化使用组件实践：https://funny-man.github.io/zee-Essembly/webpack模块化使用组件的实践/
