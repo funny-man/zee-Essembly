@@ -16,7 +16,7 @@
 
 上拉加载：https://funny-man.github.io/zee-Essembly/pull-up-load/
 
-轮播-渐变：https://funny-man.github.io/zee-Essembly/slider-graduaichang/
+轮播-渐变：https://funny-man.github.io/zee-Essembly/slider-gradualchange/
 
 轮播-常规：https://funny-man.github.io/zee-Essembly/slider-normal/
 
@@ -26,4 +26,4 @@ tab：https://funny-man.github.io/zee-Essembly/tab/
 
 木桶布局：https://funny-man.github.io/zee-Essembly/木桶布局/
 
-webpack模块化使用组件实践：https://funny-man.github.io/zee-Essembly/webpack模块化使用组件的实践/
+webpack模块化使用组件实践：https://funny-man.github.io/zee-Essembly/webpack-practice/
