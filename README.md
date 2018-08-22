@@ -14,7 +14,7 @@
 
 懒加载：https://funny-man.github.io/zee-Essembly/load-on-demand/
 
-上拉加载：https://funny-man.github.io/zee-Essembly/pull-up-load/
+上拉加载：http://zeeliu666.coding.me/zee-Essembly/pull-up-load/
 
 轮播-渐变：https://funny-man.github.io/zee-Essembly/slider-gradualchange/
 
@@ -26,4 +26,4 @@ tab：https://funny-man.github.io/zee-Essembly/tab/
 
 木桶布局：https://funny-man.github.io/zee-Essembly/木桶布局/
 
-webpack模块化使用组件实践：https://funny-man.github.io/zee-Essembly/webpack-practice/
+webpack模块化使用组件实践：http://zeeliu666.coding.me/zee-Essembly/practice/
